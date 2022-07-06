@@ -1,14 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const UserControl = require('../controllers/userController')
-const valid = require('../validators/userValidation')
+const userController = require("../controllers/userController");
+const bookController = require("../controllers/bookController");
+const valid = require("../validators/userValidation");
 
+//POST APIS
+/*API TO CREATE USER*/
+router.post("/register", valid.userValidation, userController.createUser);
+/*API TO CREATE BOOK*/
+router.post("/books", bookController.createBook);
 
-// ---=+=---------=+=----------=+=----------- [ Route APIs ] ---=+=---------=+=----------=+=-----------//
-
-router.post("/register", valid.userValidation, UserControl.createUser)
-
-
-module.exports = router
-
-// ---=+=---------=+=----------=+=----------- ****************** ---=+=---------=+=----------=+=-----------//
+module.exports = router;
