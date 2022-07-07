@@ -5,7 +5,6 @@ const isValid = require("../validators/dataValidator");
 const userValidation = async (req, res, next) => {
   try {
     let data = req.body;
-
     let message;
 
     if ((message = isValid.body(data))) {
@@ -22,8 +21,7 @@ const userValidation = async (req, res, next) => {
     if (!arr.includes(title)) {
       return res.status(400).send({
         status: false,
-        message:
-          "Title is required and can only have these values : Mr, Mrs, Miss",
+        message: `Title is required and can only have these values ${arr}`,
       });
     }
     if ((message = isValid.check(name))) {
@@ -83,20 +81,31 @@ const userValidation = async (req, res, next) => {
           .status(400)
           .send({ status: false, message: `street ${message}` });
       }
+      if ((message = isValid.check(address.city))) {
+        return res
+          .status(400)
+          .send({ status: false, message: `city ${message}` });
+      }
+      if ((message = isValid.check(address.pincode))) {
+        return res
+          .status(400)
+          .send({ status: false, message: `pincode ${message}` });
+      }
     }
 
     let Email = await UserModel.findOne({ email });
-    let Phone = await UserModel.findOne({ phone });
-
-    if (Phone)
-      return res.status(400).send({
-        status: false,
-        message: "user phone no. is already registered",
-      });
     if (Email) {
       return res
         .status(400)
         .send({ status: false, message: "User Email is already registered" });
+    }
+
+    let Phone = await UserModel.findOne({ phone });
+    if (Phone) {
+      return res.status(400).send({
+        status: false,
+        message: "Phone no is already registered",
+      });
     }
     next();
   } catch (err) {

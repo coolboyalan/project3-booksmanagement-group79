@@ -10,8 +10,14 @@ router.post("/register", valid.userValidation, userController.createUser);
 /*API TO CREATE BOOK*/
 router.post("/books", bookController.createBook);
 
-router.get("/books/:bookId", bookController.getBookDetailsById)
+//GET APIS
+/* GET API TO GET ALL BOOKS, OR BY FILTER*/
+router.get("/books", bookController.getBooks);
+/*GET API TO GET BOOK BY ID*/
+router.get("/books/:bookId", bookController.getBookDetailsById);
 
-router.delete("/books/bookId", bookController.deleteByBookId)
+//DELETE APIS
+/*DELETE API TO DELETE BOOK BY ID*/
+router.delete("/books/:bookId", bookController.deleteByBookId);
 
 module.exports = router;
