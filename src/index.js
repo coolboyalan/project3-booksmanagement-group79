@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const app = express();
 
 app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
 
 //DATABASE
 mongoose

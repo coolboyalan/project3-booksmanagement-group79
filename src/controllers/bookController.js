@@ -1,55 +1,56 @@
 const bookModel = require("../models/bookModel");
-const isValid = require("../validators/bookValidator");
+const isValid = require("../validators/dataValidator");
 
 const createBook = async (req, res) => {
   try {
     let data = req.body;
-    let content = Object.keys(data).length;
+    let message;
 
-    if (!content) {
+    if (message = isValid.body(data)) {
       return res.status(400).send({
         status: false,
-        message: "Please provide some valid data in the body",
+        message: message,
       });
     }
 
     let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } =
       data;
 
-    if (isValid.check(title)) {
+
+    if ((message = isValid.check(title))) {
       return res.status(400).send({
         status: false,
-        message: `title ${isValid.check(title)}`,
+        message: `title ${message}`,
       });
     }
-    if (isValid.check(excerpt)) {
+    if ((message = isValid.check(excerpt))) {
       return res.status(400).send({
         status: false,
-        message: `excerpt ${isValid.check(excerpt)}`,
+        message: `excerpt ${message}`,
       });
     }
-    if (isValid.checkId(userId)) {
+    if (!isValid.checkId(userId)) {
       return res.status(400).send({
         status: false,
         message: "A valid userId is required",
       });
     }
-    if (isValid.check(ISBN)) {
+    if ((message = isValid.check(ISBN))) {
       return res.status(400).send({
         status: false,
-        message: `excerpt ${isValid.check(ISBN)}`,
+        message: `ISBN ${message}`,
       });
     }
-    if (isValid.check(category)) {
+    if ((message = isValid.check(category))) {
       return res.status(400).send({
         status: false,
-        message: `excerpt ${isValid.check(category)}`,
+        message: `category ${message}`,
       });
     }
-    if (isValid.arr(subcategory)) {
+    if ((message = isValid.arr(subcategory))) {
       return res.status(400).send({
         status: false,
-        message: `subcategory ${isValid.arr(subcategory)}`,
+        message: `subcategory ${message}`,
       });
     }
     if (!isValid.check(releasedAt)) {

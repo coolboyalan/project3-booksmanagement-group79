@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, "name is missing"],
+      trim: true,
     },
     phone: {
       type: String,
@@ -22,15 +23,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "email is missing"],
       unique: true,
+      trim:true
     },
     password: {
       type: String,
       required: [true, "password is missing"],
     },
     address: {
-      street: String,
-      city: String,
-      pincode: String,
+      street: { type: String, trim: true },
+      city: { type: String, trim: true },
+      pincode: { type: String, trim: true },
     },
   },
   { timestamps: true }

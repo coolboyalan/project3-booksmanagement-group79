@@ -1,27 +1,22 @@
 const UserModel = require("../models/userModel");
 const validator = require("validator");
-
-const isValidBody = (body) => {
-  return Object.keys(body).length > 0;
-};
-
-const isValidName = (value) => {
-  let regEx = /^[a-zA-z]+([\s][a-zA-Z]+)*$/;
-  return regEx.test(value);
-};
+const isValid = require("../validators/dataValidator");
 
 const userValidation = async (req, res, next) => {
   try {
     let data = req.body;
 
-    let { title, name, email, phone, password, address } = data;
+    let message;
 
-    if (!isValidBody(data)) {
+    if ((message = isValid.body(data))) {
       return res.status(400).send({
         status: false,
-        message: "User details are required in order to create a user",
+        message: message,
       });
     }
+
+    let { title, name, email, phone, password, address } = data;
+
     let arr = ["Mr", "Miss", "Mrs"];
 
     if (!arr.includes(title)) {
@@ -31,43 +26,66 @@ const userValidation = async (req, res, next) => {
           "Title is required and can only have these values : Mr, Mrs, Miss",
       });
     }
-    if (!name) {
+    if ((message = isValid.check(name))) {
       return res
         .status(400)
-        .send({ status: false, message: "Please provide User name" });
+        .send({ status: false, message: `name ${message}` });
     }
     name = name.trim();
 
-    if (!isValidName(name)) {
+    if (!isValid.name(name)) {
+      return res.status(400).send({
+        status: false,
+        message: "Name is invalid, please enter a valid name",
+      });
+    }
+    if ((message = isValid.check(email))) {
       return res
         .status(400)
-        .send({ status: false, message: "Name is invalid" });
+        .send({ status: false, message: `email ${message}` });
     }
+    email = email.trim();
 
-    if (!email) {
-      return res
-        .status(400)
-        .send({ status: false, message: "Please provide User Email" });
-    }
-    if (!validator.isEmail(email.trim())) {
+    if (!validator.isEmail(email)) {
       return res
         .status(400)
         .send({ status: false, message: "User Email is invalid" });
     }
-
-    if (!phone)
+    if ((message = isValid.check(phone))) {
       return res
         .status(400)
-        .send({ status: false, message: "User phone no. is required" });
+        .send({ status: false, message: `phone ${message}` });
+    }
+    phone = phone.trim();
 
-    const phoneRegex = /^[6-9]\d{9}$/;
-
-    if (!phoneRegex.test(phone.trim()))
+    if (!isValid.mobile(phone)) {
       return res.status(400).send({
         status: false,
-        message: "phone no. should start from 6-9 and contain 10 digits",
+        message:
+          "phone no. should start from 6-9 and can only contain numbers with a fixed length of 10 digits",
+      });
+    }
+    if ((message = isValid.check(password))) {
+      return res
+        .status(400)
+        .send({ status: false, message: `password ${message}` });
+    }
+    if (!isValid.pass(password))
+      return res.status(400).send({
+        status: false,
+        message:
+          "password should must be 8 to 15 charecter long and muat contain 1 uppercase, 1 lowercase and 1 special character",
       });
 
+    if (address.street) {
+      if ((message = isValid.check(address.street))) {
+        return res
+          .status(400)
+          .send({ status: false, message: `street ${message}` });
+      }
+    }
+
+    let Email = await UserModel.findOne({ email });
     let Phone = await UserModel.findOne({ phone });
 
     if (Phone)
@@ -75,34 +93,6 @@ const userValidation = async (req, res, next) => {
         status: false,
         message: "user phone no. is already registered",
       });
-
-    if (!password) {
-      return res
-        .status(400)
-        .send({ status: false, message: "password is required" });
-    }
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
-    if (!passwordRegex.test(password))
-      return res.status(400).send({
-        status: false,
-        message:
-          "password should be 8 to 15 charecter and should have 1 uppercase and 1 lowercase and 1 special character",
-      });
-
-    if (
-      typeof address.street != "string" ||
-      typeof address.city != "string" ||
-      typeof address.pincode != "string"
-    ) {
-      return res.status(400).send({
-        status: false,
-        message: "address street,city,pincode should be in string format",
-      });
-    }
-
-    let Email = await UserModel.findOne({ email });
-
     if (Email) {
       return res
         .status(400)
