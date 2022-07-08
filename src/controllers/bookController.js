@@ -192,7 +192,7 @@ const getBookDetailsById = async (req, res) => {
         review: 1,
       });
 
-    let result = new Object.assign(findBook);
+    let result = Object.assign({},findBook);
     delete result.ISBN;
     result["reviewsData"] = reviewData;
 
