@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const body = (ele) => {
-  if(Object.keys(ele).length) return
-  return `Please send some valid data in request body`
+  if (Object.keys(ele).length) return;
+  return `Please send some valid data in request body`;
 };
 
 const check = (ele) => {
@@ -52,16 +52,16 @@ const name = (ele) => {
   return regEx.test(ele);
 };
 
-const pass = (ele)=>{
+const pass = (ele) => {
   const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
-  return passwordRegex.test(ele)
-}
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
+  return passwordRegex.test(ele);
+};
 
-const mobile = (ele)=>{
+const mobile = (ele) => {
   const phoneRegex = /^[6-9]\d{9}$/;
-  return phoneRegex.test(ele)
-}
+  return phoneRegex.test(ele);
+};
 
 module.exports = {
   check,
@@ -70,5 +70,5 @@ module.exports = {
   body,
   name,
   pass,
-  mobile
+  mobile,
 };

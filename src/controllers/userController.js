@@ -1,6 +1,9 @@
 const UserModel = require("../models/userModel");
 const validator = require("validator");
 const isValid = require("../validators/dataValidator");
+const jwt = require("jsonwebtoken");
+const userModel = require("../models/userModel");
+require("dotenv").config()
 
 const createUser = async (req, res) => {
   try {
@@ -91,8 +94,8 @@ const createUser = async (req, res) => {
           .status(400)
           .send({ status: false, message: `pincode ${message}` });
       }
-      let pincodeReg = /^[1-9][0-9]{5}$/
-      if(!pincodeReg.test(address.pincode)){
+      let pincodeReg = /^[1-9][0-9]{5}$/;
+      if (!pincodeReg.test(address.pincode)) {
         return res
           .status(400)
           .send({ status: false, message: `pincode isn't valid` });
@@ -118,7 +121,53 @@ const createUser = async (req, res) => {
       .status(201)
       .send({ status: true, message: "Success", data: userData });
   } catch (err) {
+    console.log(err.message);
     res.status(500).send({ status: false, message: err.message });
   }
 };
-module.exports.createUser = createUser;
+
+const login = async (req, res) => {
+  try {
+    let data = req.body;
+    let message;
+
+    if ((message = isValid.body(data))) {
+      return res.status(400).send({ status: false, message: message });
+    }
+
+    let { email, password } = data;
+
+    if (!email) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Email is required to login" });
+    }
+    if (!password) {
+      return res
+        .status(400)
+        .send({ status: false, message: "password is required to login" });
+    }
+    let result = await userModel.findOne({ email: email, password: password });
+
+    if (!result) {
+      return res
+        .status(401)
+        .send({ status: false, message: "email or password is incorrect" });
+    }
+
+    let id = result["_id"].toString()
+    let token = jwt.sign({userId:id},process.env.JWT_SECRET,{expiresIn:`72h`})
+    res.setHeader("x-api-key",token)
+
+    res.status(200).send({status:true,message:"Success",data:token})
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ status: false, message: err.message });
+  }
+};
+
+
+module.exports = {
+  createUser,
+  login
+};

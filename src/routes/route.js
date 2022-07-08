@@ -8,6 +8,8 @@ const bookController = require("../controllers/bookController");
 router.post("/register", userController.createUser);
 /*API TO CREATE BOOK*/
 router.post("/books", bookController.createBook);
+/*API TO LOGIN*/
+router.post("/login", userController.login)
 
 //GET APIS
 /* GET API TO GET ALL BOOKS, OR BY FILTER*/
