@@ -54,10 +54,10 @@ const createBook = async (req, res) => {
         message: `subcategory ${message}`,
       });
     }
-    if (!isValid.check(releasedAt)) {
+    if ((message = isValid.check(releasedAt))) {
       return res.status(400).send({
         status: false,
-        message: "A valid releaseDate is required",
+        message: `released Date ${message}`,
       });
     }
     let user = await userModel.findById(userId);
@@ -65,7 +65,16 @@ const createBook = async (req, res) => {
     if (!user) {
       return res.status(404).send({
         status: false,
-        message: `There is no user with this "${userId}" userId`,
+        message: `There is no user with this ${userId} userId`,
+      });
+    }
+    let duplicate = await bookModel.findOne({
+      $or: [{ title: title }, { ISBN: ISBN }],
+    });
+    if (duplicate) {
+      return res.status(409).send({
+        status: false,
+        message: `Title and ISBN should must be unique`,
       });
     }
 
@@ -108,6 +117,7 @@ const getBooks = async (req, res) => {
           search[x] = data[x];
         }
       });
+      search.isDeleted = false;
       let result = await bookModel
         .find(search)
         .select({
@@ -121,9 +131,10 @@ const getBooks = async (req, res) => {
         .sort({ title: 1 });
 
       if (!result.length) {
-        return res
-          .status(404)
-          .send({ status: false, message: "books not found" });
+        return res.status(404).send({
+          status: false,
+          message: "No matching books with this filter",
+        });
       }
       return res.status(200).send({
         status: true,
@@ -169,7 +180,7 @@ const getBookDetailsById = async (req, res) => {
         .send({ status: false, message: "BookId in path params isn't valid" });
     }
 
-    let findBook = await bookModel.findOne({ bookId });
+    let findBook = await bookModel.findOne({ bookId }).lean();
 
     if (!findBook) {
       return res
@@ -192,13 +203,12 @@ const getBookDetailsById = async (req, res) => {
         review: 1,
       });
 
-    let result = Object.assign({},findBook);
-    delete result.ISBN;
-    result["reviewsData"] = reviewData;
+    delete findBook.ISBN;
+    findBook["reviewsData"] = reviewData;
 
     return res
       .status(200)
-      .send({ status: true, message: "Books list", data: result });
+      .send({ status: true, message: "Books list", data: findBook });
   } catch (err) {
     console.log(err.message);
     return res.status(500).send({ status: false, message: err.message });
@@ -227,7 +237,7 @@ const deleteByBookId = async (req, res) => {
         .send({ status: false, message: "bookId not found in DB" });
     if (findBook.isDeleted) {
       res
-        .status(204)
+        .status(202)
         .send({ status: false, message: "This book is already deleted" });
     } else {
       await bookModel.findByIdAndUpdate(
@@ -246,9 +256,82 @@ const deleteByBookId = async (req, res) => {
   }
 };
 
+const updateBookById = async (req, res) => {
+  try {
+    let bookId = req.params.bookId;
+    let data = req.body;
+    let message;
+
+    if (!isValid.checkId(bookId)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "BookId in path params isn't valid" });
+    }
+    if ((message = isValid.body(data))) {
+      return res.status(400).send({ status: false, message: message });
+    }
+    for (let key in data) {
+      if (key == "title" || key == "ISBN") {
+        let result = await bookModel.findOne({ [key]: data[key] });
+        if (result) message = key;
+      }
+    }
+    if (message) {
+      return res
+        .status(409)
+        .send({ status: false, message: `${message} should must be unique` });
+    }
+    let { title, excerpt, ISBN, releasedAt } = data;
+    let update = {};
+
+    if (title) {
+      if ((message = isValid.check(title))) {
+        return res.status(400).send({
+          status: false,
+          message: `title ${message}`,
+        });
+      }
+      update.title = title;
+    }
+    if (excerpt) {
+      if ((message = isValid.check(excerpt))) {
+        return res.status(400).send({
+          status: false,
+          message: `excerpt ${message}`,
+        });
+      }
+      update.excerpt = excerpt;
+    }
+    if (ISBN) {
+      if ((message = isValid.check(ISBN))) {
+        return res.status(400).send({
+          status: false,
+          message: `ISBN ${message}`,
+        });
+      }
+      update.ISBN = ISBN;
+    }
+    let result = await bookModel.findOneAndUpdate(
+      { _id: bookId, isDeleted: false },
+      update,
+      { new: true }
+    );
+    if (!result) {
+      return res.status(404).send({
+        status: false,
+        message: "No book with this Id or already deleted",
+      });
+    }
+    return res
+      .status(200)
+      .send({ status: true, message: "Success", data: result });
+  } catch (err) {}
+};
+
 module.exports = {
   createBook,
   getBooks,
   getBookDetailsById,
   deleteByBookId,
+  updateBookById,
 };

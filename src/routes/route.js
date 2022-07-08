@@ -15,6 +15,9 @@ router.get("/books", bookController.getBooks);
 /*GET API TO GET BOOK BY ID*/
 router.get("/books/:bookId", bookController.getBookDetailsById);
 
+//PUT APIS
+/*API TO UPDATE A BOOK BY ID*/
+router.put("/books/:bookId", bookController.updateBookById);
 //DELETE APIS
 /*DELETE API TO DELETE BOOK BY ID*/
 router.delete("/books/:bookId", bookController.deleteByBookId);
