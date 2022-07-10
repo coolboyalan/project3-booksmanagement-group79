@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const bookController = require("../controllers/bookController");
 const reviewController = require("../controllers/reviewController");
+const mid = require("../middlewares/auth")
 
 //POST APIS
 /*API TO CREATE USER*/
@@ -16,9 +17,9 @@ router.post("/login", userController.login);
 
 //GET APIS
 /* GET API TO GET ALL BOOKS, OR BY FILTER*/
-router.get("/books", bookController.getBooks);
+router.get("/books", mid.auth,bookController.getBooks);
 /*GET API TO GET BOOK BY ID*/
-router.get("/books/:bookId", bookController.getBookDetailsById);
+router.get("/books/:bookId", mid.auth, bookController.getBookDetailsById);
 
 //PUT APIS
 /*API TO UPDATE A BOOK BY ID*/
