@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-// ---=+=---------=+=----------=+=----------- [ user Model ] ---=+=---------=+=----------=+=-----------//
-
 const UserSchema = new mongoose.Schema(
   {
     title: {
@@ -23,7 +21,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "email is missing"],
       unique: true,
-      trim:true
+      trim: true,
     },
     password: {
       type: String,

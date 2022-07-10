@@ -3,7 +3,7 @@ const validator = require("validator");
 const isValid = require("../validators/dataValidator");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
-require("dotenv").config()
+require("dotenv").config();
 
 const createUser = async (req, res) => {
   try {
@@ -155,19 +155,20 @@ const login = async (req, res) => {
         .send({ status: false, message: "email or password is incorrect" });
     }
 
-    let id = result["_id"].toString()
-    let token = jwt.sign({userId:id},process.env.JWT_SECRET,{expiresIn:`72h`})
-    res.setHeader("x-api-key",token)
+    let id = result["_id"].toString();
+    let token = jwt.sign({ userId: id }, process.env.JWT_SECRET, {
+      expiresIn: `72h`,
+    });
+    res.setHeader("x-api-key", token);
 
-    res.status(200).send({status:true,message:"Success",data:token})
+    res.status(200).send({ status: true, message: "Success", data: token });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ status: false, message: err.message });
   }
 };
 
-
 module.exports = {
   createUser,
-  login
+  login,
 };

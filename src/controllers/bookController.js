@@ -74,7 +74,7 @@ const createBook = async (req, res) => {
     if (duplicate) {
       return res.status(409).send({
         status: false,
-        message: `Title and ISBN should must be unique`,
+        message: `Both Title and ISBN should must be unique`,
       });
     }
 
@@ -180,7 +180,7 @@ const getBookDetailsById = async (req, res) => {
         .send({ status: false, message: "BookId in path params isn't valid" });
     }
 
-    let findBook = await bookModel.findOne({ bookId }).lean();
+    let findBook = await bookModel.findById(bookId).lean();
 
     if (!findBook) {
       return res
