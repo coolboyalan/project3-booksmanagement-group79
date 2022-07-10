@@ -134,7 +134,7 @@ const updateReview = async (req, res) => {
       });
     }
     if (oldReview.bookId != bookId) {
-      return res.status(400).send({
+      return res.status(403).send({
         status: false,
         message: "this bookId and reviewId doesn't belong to each other",
       });
@@ -201,8 +201,54 @@ const updateReview = async (req, res) => {
 
 const deleteReview = async (req, res) => {
   try {
-    let bookid = req.params.bookId;
+    let bookId = req.params.bookId;
     let reviewId = req.params.reviewId;
+
+    if (!isValid.checkId(bookId)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "bookId in path params isn't valid" });
+    }
+    if (!isValid.checkId(reviewId)) {
+      return res.status(400).send({
+        status: false,
+        message: "reviewId in path params isn't valid",
+      });
+    }
+
+    let review = await reviewModel.findById(reviewId);
+    if (!review) {
+      return res
+        .status(404)
+        .send({ status: false, message: "there is no review with this id" });
+    }
+    if (review.isDeleted) {
+      return res
+        .status(404)
+        .send({ status: false, message: "this review is already deleted" });
+    }
+    if (review.bookId != bookId) {
+      return res.status(403).send({
+        status: false,
+        message: "this bookId and reviewId doesn't belong to each other",
+      });
+    }
+
+    let book = await bookModel.findById(bookId);
+    if (book.isDeleted) {
+      return res
+        .status(404)
+        .send({ status: false, message: "this book has already been deleted" });
+    }
+    if (!book) {
+      return res
+        .status(404)
+        .send({ status: false, message: "there is no book with this id" });
+    }
+
+    await reviewModel.findByIdAndUpdate(reviewId, { isDeleted: true });
+    await bookModel.findByIdAndUpdate(bookId, { $inc: { reviews: -1 } });
+    res.status(200).send({ status: true, message: "Success" });
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ status: false, message: err.message });
