@@ -211,7 +211,7 @@ const getBookDetailsById = async (req, res) => {
       .send({ status: true, message: "Books list", data: findBook });
   } catch (err) {
     console.log(err.message);
-    return res.status(500).send({ status: false, message: err.message });
+    res.status(500).send({ status: false, message: err.message });
   }
 };
 
@@ -325,7 +325,10 @@ const updateBookById = async (req, res) => {
     return res
       .status(200)
       .send({ status: true, message: "Success", data: result });
-  } catch (err) {}
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ status: false, message: err.message });
+  }
 };
 
 module.exports = {

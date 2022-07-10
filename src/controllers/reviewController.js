@@ -1,7 +1,6 @@
 const reviewModel = require("../models/reviewModel");
 const isValid = require("../validators/dataValidator");
 const bookModel = require("../models/bookModel");
-const { findOneAndUpdate } = require("../models/reviewModel");
 
 const addReview = async (req, res) => {
   try {
@@ -200,18 +199,18 @@ const updateReview = async (req, res) => {
   }
 };
 
-const deleteReview = async (req,res) => {
-  try{ 
-    let bookid = req.params.bookId
-    let reviewId = req.params.reviewId
-  }catch(err){
-    console.log(err.message)
-    res.status(500).send({status:false,message:err.message})
+const deleteReview = async (req, res) => {
+  try {
+    let bookid = req.params.bookId;
+    let reviewId = req.params.reviewId;
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ status: false, message: err.message });
   }
-}
+};
 
 module.exports = {
   addReview,
   updateReview,
-  deleteReview
+  deleteReview,
 };
