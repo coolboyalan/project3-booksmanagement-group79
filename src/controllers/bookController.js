@@ -60,6 +60,13 @@ const createBook = async (req, res) => {
         message: `released Date ${message}`,
       });
     }
+    if (!isValid.date(releasedAt)) {
+      return res.status(400).send({
+        status: false,
+        message:
+          "releasedAt date should must be a string in the format YYYY-MM-DD",
+      });
+    }
     let user = await userModel.findById(userId);
 
     if (!user) {
@@ -311,6 +318,16 @@ const updateBookById = async (req, res) => {
       }
       update.ISBN = ISBN;
     }
+    if (releasedAt) {
+      if (!isValid.date(releasedAt)) {
+        return res.status(400).send({
+          status: false,
+          message:
+            "releasedAt date should must be a string in the format YYYY-MM-DD",
+        });
+      }
+      update.releasedAt = releasedAt;
+    }
     let result = await bookModel.findOneAndUpdate(
       { _id: bookId, isDeleted: false },
       update,
@@ -319,7 +336,7 @@ const updateBookById = async (req, res) => {
     if (!result) {
       return res.status(404).send({
         status: false,
-        message: "No book with this Id or already deleted",
+        message: "No book with this Id or the book is already deleted",
       });
     }
     return res

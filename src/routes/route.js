@@ -9,7 +9,7 @@ const mid = require("../middlewares/auth")
 /*API TO CREATE USER*/
 router.post("/register", userController.createUser);
 /*API TO CREATE BOOK*/
-router.post("/books", bookController.createBook);
+router.post("/books", mid.userAuth, bookController.createBook);
 /*API TO ADD A REVIEW*/
 router.post("/books/:bookId/review", reviewController.addReview);
 /*API TO LOGIN*/
@@ -17,19 +17,19 @@ router.post("/login", userController.login);
 
 //GET APIS
 /* GET API TO GET ALL BOOKS, OR BY FILTER*/
-router.get("/books", mid.auth,bookController.getBooks);
+router.get("/books", mid.authorization,bookController.getBooks);
 /*GET API TO GET BOOK BY ID*/
-router.get("/books/:bookId", mid.auth, bookController.getBookDetailsById);
+router.get("/books/:bookId", mid.authorization, bookController.getBookDetailsById);
 
 //PUT APIS
 /*API TO UPDATE A BOOK BY ID*/
-router.put("/books/:bookId", bookController.updateBookById);
+router.put("/books/:bookId", mid.authorization, bookController.updateBookById);
 /*API TO UPDATE A BOOK REVIEW USING BOOKID AND REVIEWID*/
 router.put("/books/:bookId/review/:reviewId", reviewController.updateReview);
 
 //DELETE APIS
 /*DELETE API TO DELETE BOOK BY ID*/
-router.delete("/books/:bookId", bookController.deleteByBookId);
+router.delete("/books/:bookId", mid.authorization,  bookController.deleteByBookId);
 /*DELETE API TO DELETE A REVIEW USING BOOK AND REVIEWID*/
 router.delete("/books/:bookId/review/:reviewId", reviewController.deleteReview);
 
