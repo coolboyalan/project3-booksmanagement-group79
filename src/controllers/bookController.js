@@ -42,6 +42,11 @@ const createBook = async (req, res) => {
         message: `ISBN ${message}`,
       });
     }
+    if (!isValid.isbn(ISBN)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "Please enter a valid ISBN" });
+    }
     if ((message = isValid.check(category))) {
       return res.status(400).send({
         status: false,
@@ -244,7 +249,7 @@ const deleteByBookId = async (req, res) => {
         .send({ status: false, message: "bookId not found in DB" });
     if (findBook.isDeleted) {
       res
-        .status(202)
+        .status(400)
         .send({ status: false, message: "This book is already deleted" });
     } else {
       await bookModel.findByIdAndUpdate(
@@ -291,7 +296,7 @@ const updateBookById = async (req, res) => {
     let { title, excerpt, ISBN, releasedAt } = data;
     let update = {};
 
-    if (title) {
+    if ("title" in data) {
       if ((message = isValid.check(title))) {
         return res.status(400).send({
           status: false,
@@ -300,7 +305,7 @@ const updateBookById = async (req, res) => {
       }
       update.title = title;
     }
-    if (excerpt) {
+    if ("excerpt" in data) {
       if ((message = isValid.check(excerpt))) {
         return res.status(400).send({
           status: false,
@@ -309,16 +314,21 @@ const updateBookById = async (req, res) => {
       }
       update.excerpt = excerpt;
     }
-    if (ISBN) {
+    if ("ISBN" in data) {
       if ((message = isValid.check(ISBN))) {
         return res.status(400).send({
           status: false,
           message: `ISBN ${message}`,
         });
       }
+      if (!isValid.isbn(ISBN)) {
+        return res
+          .status(400)
+          .send({ status: false, message: "Please enter a valid ISBN" });
+      }
       update.ISBN = ISBN;
     }
-    if (releasedAt) {
+    if ("releasedAt" in data) {
       if (!isValid.date(releasedAt)) {
         return res.status(400).send({
           status: false,

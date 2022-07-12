@@ -78,7 +78,7 @@ const createUser = async (req, res) => {
           "password should must be 8 to 15 character long and must contain 1 uppercase, 1 lowercase and 1 special character",
       });
 
-    if (address) {
+    if ("address" in data) {
       if ((message = isValid.check(address.street))) {
         return res
           .status(400)

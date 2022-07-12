@@ -25,7 +25,7 @@ const addReview = async (req, res) => {
     let { review, rating, reviewedBy } = data;
     let reviewData = {};
 
-    if (reviewedBy) {
+    if ("reviewedBy" in data) {
       if ((message = isValid.check(reviewedBy))) {
         return res
           .status(400)
@@ -54,7 +54,7 @@ const addReview = async (req, res) => {
     reviewData["reviewedAt"] = new Date();
     reviewData["bookId"] = bookId;
 
-    if (review) {
+    if ("review" in data) {
       if ((message = isValid.check(review))) {
         return res
           .status(400)
@@ -153,7 +153,7 @@ const updateReview = async (req, res) => {
     let { review, reviewedBy, rating } = data;
     let updateData = {};
 
-    if (reviewedBy) {
+    if ("reviewedBy" in data) {
       if ((message = isValid.check(reviewedBy))) {
         return res
           .status(400)
@@ -167,7 +167,7 @@ const updateReview = async (req, res) => {
       }
       updateData["reviewedBy"] = reviewedBy;
     }
-    if (rating) {
+    if ("rating" in data) {
       if (!(typeof rating == "number" && rating <= 5 && rating >= 1)) {
         return res.status(400).send({
           status: false,
@@ -177,7 +177,7 @@ const updateReview = async (req, res) => {
       }
       updateData["rating"] = rating;
     }
-    if (review) {
+    if ("review" in data) {
       if ((message = isValid.check(review))) {
         return res
           .status(400)

@@ -37,6 +37,10 @@ const arr = (ele) => {
     if (!check) {
       return "array can only have string values";
     }
+    if (check) {
+      let ele1 = [...new Set(ele)];
+      if (ele1.length != ele.length) return "can't have duplicate values";
+    }
     return;
   }
   if (typeof ele == "string" && ele.trim().length) return;
@@ -69,6 +73,30 @@ const date = (ele) => {
   return dateRegex.test(ele);
 };
 
+const isbn = (str) => {
+  let sum, weight, digit, check, i;
+
+  str = str.replace(/[^0-9X]/gi, "");
+
+  if (str.length != 13) {
+    return false;
+  }
+
+  if (str.length == 13) {
+    sum = 0;
+    for (i = 0; i < 12; i++) {
+      digit = parseInt(str[i]);
+      if (i % 2 == 1) {
+        sum += 3 * digit;
+      } else {
+        sum += digit;
+      }
+    }
+    check = (10 - (sum % 10)) % 10;
+    return check == str[str.length - 1];
+  }
+};
+
 module.exports = {
   check,
   arr,
@@ -78,4 +106,5 @@ module.exports = {
   pass,
   mobile,
   date,
+  isbn,
 };
