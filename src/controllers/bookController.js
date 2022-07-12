@@ -196,7 +196,7 @@ const getBookDetailsById = async (req, res) => {
     }
     if (findBook.isDeleted) {
       return res
-        .status(404)
+        .status(400)
         .send({ status: false, message: "book is already deleted!" });
     }
 

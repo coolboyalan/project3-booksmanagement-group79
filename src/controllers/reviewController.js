@@ -72,13 +72,12 @@ const addReview = async (req, res) => {
     if (!book) {
       return res.status(404).send({
         status: false,
-        message: "No book with this id or already deleted",
+        message: "No book with this id or the book is already deleted",
       });
     }
 
-    await reviewModel.create(reviewData);
-    let reviews = await reviewModel.find({ bookId: bookId });
-    book.reviewsData = reviews;
+    let newReview = await reviewModel.create(reviewData);
+    book.reviewsData = newReview;
 
     return res
       .status(201)
@@ -187,9 +186,10 @@ const updateReview = async (req, res) => {
       updateData["review"] = review;
     }
 
-    await reviewModel.findOneAndUpdate({ _id: reviewId }, updateData);
-    let reviews = await reviewModel.find({ bookId: bookId });
-    book.reviewsData = reviews;
+    let newReview = await reviewModel.findByIdAndUpdate(reviewId, updateData, {
+      new: true,
+    });
+    book.reviewsData = newReview;
     return res
       .status(200)
       .send({ status: true, message: "Success", data: book });
