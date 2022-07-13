@@ -40,7 +40,7 @@ const arr = (ele) => {
     if (!check) {
       return "array can only have string values";
     }
-    if(typeof(check)=="string") return "can't have empty string"
+    if (typeof check == "string") return "can't have empty string";
     if (check) {
       let ele1 = [...new Set(ele)];
       if (ele1.length != ele.length) return "can't have duplicate values";

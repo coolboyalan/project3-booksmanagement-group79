@@ -20,6 +20,17 @@ const authorization = (req, res, next) => {
       }
       if (req.method == "GET") return next();
 
+      if (!bookId) {
+        return res
+          .status(400)
+          .send({ status: false, message: "bookId is missing" });
+      }
+      if (!isValid.checkId(bookId)) {
+        return res
+          .status(400)
+          .send({ status: false, message: "bookId is invalid" });
+      }
+
       let book = await bookModel.findById(bookId);
       if (!book) {
         return res
