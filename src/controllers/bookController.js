@@ -242,7 +242,7 @@ const deleteByBookId = async (req, res) => {
         message: "BookId in the path params isn't valid",
       });
     }
-    let findBook = await bookModel.findOne({ bookId });
+    let findBook = await bookModel.findById(bookId);
     if (!findBook)
       return res
         .status(404)

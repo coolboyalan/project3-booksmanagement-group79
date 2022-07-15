@@ -16,7 +16,7 @@ const authorization = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, payload) => {
       if (err) {
-        return res.status(400).send({ status: false, message: err.message });
+        return res.status(401).send({ status: false, message: err.message });
       }
       if (req.method == "GET") return next();
 
